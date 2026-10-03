@@ -147,18 +147,18 @@ def test_dedupe_preserves_first_seen_order() -> None:
 
 
 def test_backend_defaults_to_engine() -> None:
-    assert Config().qa.backend == "engine"
+    assert Config().docoracle.backend == "engine"
 
 
 def test_invalid_backend_is_rejected() -> None:
     with pytest.raises(ValidationError) as exc:
-        Config(qa={"backend": "nope"})  # type: ignore[arg-type]
+        Config(docoracle={"backend": "nope"})  # type: ignore[arg-type]
     assert "engine" in str(exc.value)
     assert "agent" in str(exc.value)
 
 
 def test_backend_from_config_dict() -> None:
-    assert Config(qa={"backend": "agent"}).qa.backend == "agent"  # type: ignore[arg-type]
+    assert Config(docoracle={"backend": "agent"}).docoracle.backend == "agent"  # type: ignore[arg-type]
 
 
 # =============================================================================
@@ -172,7 +172,7 @@ def test_factory_returns_engine_by_default() -> None:
 
 
 def test_factory_returns_agent_when_configured() -> None:
-    config = Config(qa={"backend": "agent"})  # type: ignore[arg-type]
+    config = Config(docoracle={"backend": "agent"})  # type: ignore[arg-type]
     with patch("src.backends.agent.resolve_api_key", return_value="test-key"):
         backend = create_answer_backend(_searcher(), _LLM(), config)
     assert isinstance(backend, QAAgent)
@@ -223,7 +223,7 @@ def test_agent_backend_async_path_returns_result() -> None:
     """The server's async path must work for the agent backend inside an event loop."""
     from tests.test_agents import FakeAgent
 
-    config = Config(qa={"backend": "agent"})  # type: ignore[arg-type]
+    config = Config(docoracle={"backend": "agent"})  # type: ignore[arg-type]
     with patch("src.backends.agent.resolve_api_key", return_value="test-key"):
         backend = create_answer_backend(_searcher(), _LLM(), config)
 

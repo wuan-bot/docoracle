@@ -22,7 +22,7 @@ structured output.
   - `engine.py` hosting `QAEngine` (moved from `src/core/qa_engine.py`),
   - `agent.py` hosting `QAAgent` and its tools (moved from `src/agents/`),
   - `factory.py` returning the configured backend.
-- **Select the backend from configuration**: add a `qa.backend` setting
+- **Select the backend from configuration**: add a `docoracle.backend` setting
   (`engine` | `agent`, default `engine`) with validation that names the valid
   values. The CLI and the HTTP server both resolve their backend through the
   shared factory.
@@ -45,10 +45,10 @@ structured output.
 
 ### New Capabilities
 
-- `answer-backends`: backend selection via `qa.backend`, the shared
+- `answer-backends`: backend selection via `docoracle.backend`, the shared
   `AnswerBackend` protocol/factory, and the separation guarantee that the engine
   and agent are independent implementations.
-- `qa-engine`: the deterministic retrieve-then-answer pipeline, including its
+- `qa-engine` (directory `specs/qa-engine`): the deterministic retrieve-then-answer pipeline, including its
   provider-native structured output and detailed result contract.
 - `qa-agent`: the tool-using pydantic-ai answer backend, including retrieval
   parity, detailed result shape, and search parity with the engine.
@@ -66,9 +66,9 @@ structured output.
   keep the response models.
 - `src/api/structured_llm_client.py`: keep embeddings/chat/streaming; route
   structured answers through the native pydantic-ai path used by both backends.
-- `src/core/config.py`: add the `qa.backend` setting.
+- `src/core/config.py`: add the `docoracle.backend` setting.
 - `src/cli.py`, `src/server/main.py`: depend only on the `AnswerBackend`
   protocol via the factory.
 - Tests: relocate engine/agent tests, delete parser-heuristic tests, add
   backend-selection, native-output, and engine/agent parity tests.
-- Documentation: `README.md` and `config.yaml` describe `qa.backend`.
+- Documentation: `README.md` and `config.yaml` describe `docoracle.backend`.

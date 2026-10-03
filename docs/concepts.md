@@ -1,11 +1,11 @@
 # Concepts
 
-A mental model of the Home Q&A system: what it stores, how a question becomes
+A mental model of the DocOracle system: what it stores, how a question becomes
 an answer, and how a browser session puts those pieces together.
 
 ## Overview
 
-Home Q&A answers natural-language questions about an Antora/AsciiDoc
+DocOracle answers natural-language questions about an Antora/AsciiDoc
 documentation set. It does this in two phases:
 
 1. **Ingest** (offline): read the documentation, split it into chunks, embed the
@@ -71,7 +71,7 @@ Retrieval is the same regardless of how the answer is produced. Two interchangea
 Both backends return the same detailed result: the answer, model confidence and
 citations, the reasoning (if any), the sources, per-chunk details with
 provenance, the retrieved count, and the retrieval mode used. Which one runs is a
-configuration choice (`qa.backend`, default `engine`); callers (CLI and web) do
+configuration choice (`docoracle.backend`, default `engine`); callers (CLI and web) do
 not change. Both generate their answer through pydantic-ai's native structured
 output, so the response is validated against the answer schema at the provider
 boundary.
@@ -131,7 +131,7 @@ browser                         server
 
 ## CLI and HTTP are the same pipeline
 
-The CLI (`qa ask`, `qa search`) and the HTTP API (`/ask`, `/search`) both go
+The CLI (`docoracle ask`, `docoracle search`) and the HTTP API (`/ask`, `/search`) both go
 through the same retrieval and answer backends. The CLI is a thin wrapper that
 prints the same result fields; `--show-sources` and `--show-context` expose the
 sources and per-chunk details that the browser UI renders. Behavior differences

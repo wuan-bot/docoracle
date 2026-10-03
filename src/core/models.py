@@ -1,4 +1,4 @@
-"""Data models for the Home Q&A system.
+"""Data models for the DocOracle system.
 
 Uses Pydantic BaseModel for type safety, validation, and built-in serialization.
 Maintains backward compatibility with the previous dataclass implementation.

@@ -1,1 +1,1 @@
-# Server module for Home Q&A backend
+# Server module for DocOracle backend

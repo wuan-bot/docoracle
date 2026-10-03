@@ -1,4 +1,4 @@
 #!/bin/bash
 #
-uv run qa components --antora-root antora-docs --clone
-uv run qa ingest
+uv run docoracle components --antora-root antora-docs --clone
+uv run docoracle ingest

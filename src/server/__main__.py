@@ -1,4 +1,4 @@
-"""Run the Home Q&A server."""
+"""Run the DocOracle server."""
 
 import argparse
 from pathlib import Path
@@ -8,7 +8,7 @@ import uvicorn
 
 def main():
     """Run the FastAPI server."""
-    parser = argparse.ArgumentParser(description="Home Q&A Server")
+    parser = argparse.ArgumentParser(description="DocOracle Server")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to")
     parser.add_argument("--port", default=8000, type=int, help="Port to listen on")
     parser.add_argument("--reload", action="store_true", default=True, help="Enable auto-reload")
