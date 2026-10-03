@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qa"
+version = "0.1.0"
+description = "Answer questions about documentation using LLM APIs"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Andreas Würl", email = "andi@tryb.de"}
+]
+
+dependencies = [
+    "requests>=2.31.0",
+    "faiss-cpu>=1.7.4",
+    "pyyaml>=6.0",
+    "numpy>=1.24.0",
+    "click>=8.1.0",
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "python-dotenv>=1.0.0",
+    "tiktoken>=0.5.0",
+    "PyStemmer>=2.2.0",
+    "rank_bm25>=0.2.2",
+    "pydantic>=2.5.0,<3.0",
+    "pydantic-ai>=2.0.0,<3.0",
+]
+
+[project.scripts]
+qa = "src.cli:cli"
+qa-server = "src.server.__main__:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=4.0",
+    "ruff>=0.4.0",
+    "basedpyright>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.ruff]
+line-length = 100
+lint.select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM"]
+lint.ignore = ["E501"]
+
+[tool.basedpyright]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+reportGeneralTypeIssues = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Q&A - Search</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --error: #ef4444;
+            --border: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .result {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .result-answer {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-answer > *:first-child { margin-top: 0; }
+        .result-answer > *:last-child { margin-bottom: 0; }
+
+        .result-answer h1,
+        .result-answer h2,
+        .result-answer h3,
+        .result-answer h4 {
+            color: var(--text-primary);
+            margin: 1.25rem 0 0.5rem;
+            line-height: 1.3;
+        }
+        .result-answer h1 { font-size: 1.4rem; }
+        .result-answer h2 { font-size: 1.2rem; }
+        .result-answer h3 { font-size: 1.05rem; }
+        .result-answer h4 { font-size: 0.95rem; color: var(--text-secondary); }
+
+        .result-answer p { margin: 0.5rem 0; }
+
+        .result-answer ul,
+        .result-answer ol {
+            margin: 0.5rem 0 0.75rem 1.5rem;
+        }
+        .result-answer li { margin: 0.2rem 0; }
+        .result-answer li > p { margin: 0.2rem 0; }
+
+        .result-answer a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .result-answer a:hover { color: var(--accent-hover); }
+
+        .result-answer code {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.1em 0.35em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+        .result-answer pre {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            overflow-x: auto;
+            margin: 0.75rem 0;
+        }
+        .result-answer pre code {
+            background: transparent;
+            padding: 0;
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .result-answer blockquote {
+            border-left: 3px solid var(--accent);
+            margin: 0.75rem 0;
+            padding: 0.1rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .result-answer table {
+            border-collapse: collapse;
+            margin: 0.75rem 0;
+            font-size: 0.95rem;
+        }
+        .result-answer th,
+        .result-answer td {
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.65rem;
+            text-align: left;
+        }
+        .result-answer th { background: var(--bg-primary); }
+
+        .result-answer hr {
+            border: 0;
+            border-top: 1px solid var(--border);
+            margin: 1rem 0;
+        }
+
+        .result-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .confidence {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.7rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .confidence-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .confidence-bar {
+            width: 60px;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .confidence-bar-fill {
+            display: block;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 999px;
+        }
+
+        .confidence-high .confidence-bar-fill { background: var(--success); }
+        .confidence-low .confidence-bar-fill { background: var(--error); }
+
+        .citations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .citation-chip {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        .reasoning {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .reasoning > summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-primary);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .reasoning > summary::-webkit-details-marker { display: none; }
+        .reasoning > summary::before {
+            content: '▸';
+            font-size: 0.8rem;
+            transition: transform 0.15s;
+            color: var(--text-secondary);
+        }
+        .reasoning[open] > summary::before { transform: rotate(90deg); }
+        .reasoning-body {
+            margin-top: 0.6rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .sources {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .sources h3 {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .source-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .source-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-family: monospace;
+        }
+
+        .source-link:hover {
+            text-decoration: underline;
+        }
+
+        .source-module {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .source-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .status svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--bg-tertiary);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .history {
+            margin-top: 2rem;
+        }
+
+        .history h3 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .history-item {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .history-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .history-question {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Home Q&A</h1>
+            <p class="subtitle">Search your documentation</p>
+        </header>
+
+        <div class="card">
+            <div id="status" class="status">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                <span>Ready</span>
+            </div>
+
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="question">Ask a question</label>
+                    <textarea
+                        id="question"
+                        name="question"
+                        placeholder="How do I configure the database? What are the API endpoints?..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group form-group">
+                        <label for="module">Module (optional)</label>
+                        <select id="module" name="module">
+                            <option value="">All modules</option>
+                        </select>
+                    </div>
+                    <div class="filter-group form-group">
+                        <label for="k">Results</label>
+                        <select id="k" name="k">
+                            <option value="3">3</option>
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        Ask
+                    </button>
+                    <button type="button" id="clearBtn" class="secondary">Clear</button>
+                </div>
+            </form>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Thinking...</p>
+            </div>
+
+            <div id="error" class="error" style="display:none;"></div>
+        </div>
+
+        <div id="results" style="display:none;">
+            <div class="card">
+                <div class="result">
+                    <div class="result-meta" id="resultMeta"></div>
+                    <div class="result-answer" id="answer"></div>
+                    <details class="reasoning" id="reasoningBlock" hidden>
+                        <summary>Reasoning</summary>
+                        <div class="reasoning-body" id="reasoningBody"></div>
+                    </details>
+                    <div class="sources" id="sources"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card history" id="history" style="display:none;">
+            <h3>Recent Questions</h3>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <script>
+        // const API_BASE = window.location.origin + window.location.pathname.replace(/\/ui\.html?$/, '');
+        const API_BASE = window.location.origin;
+        let history = JSON.parse(localStorage.getItem('qaHistory') || '[]');
+
+        // Escape HTML special characters before injecting into innerHTML. Used
+        // for any string we don't trust to be HTML (chunk text, titles, etc.).
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Configure marked: GFM, line breaks treated as <br> (matches what
+        // the model produces).
+        marked.setOptions({ gfm: true, breaks: true });
+
+        function renderMarkdown(value) {
+            if (!value) return '';
+            const rawHtml = marked.parse(String(value));
+            return DOMPurify.sanitize(rawHtml);
+        }
+
+        // Render the LLM-supplied metadata: confidence badge (with a
+        // colour-coded bar) and any citations the model returned. The
+        // retrieved chunk sources are shown separately below.
+        function renderResultMeta(data) {
+            const parts = [];
+
+            const conf = typeof data.confidence === 'number' ? data.confidence : null;
+            if (conf !== null) {
+                const pct = Math.max(0, Math.min(1, conf));
+                const pctText = (pct * 100).toFixed(0);
+                const cls = pct >= 0.75 ? 'confidence-high' : (pct < 0.5 ? 'confidence-low' : '');
+                parts.push(`
+                    <span class="confidence ${cls}" title="Model confidence">
+                        <span>Confidence</span>
+                        <span class="confidence-bar"><span class="confidence-bar-fill" style="width: ${pctText}%"></span></span>
+                        <span class="confidence-value">${pctText}%</span>
+                    </span>
+                `);
+            }
+
+            if (Array.isArray(data.citations) && data.citations.length > 0) {
+                const chips = data.citations
+                    .filter(c => c !== null && c !== undefined && String(c).length > 0)
+                    .map(c => `<span class="citation-chip">${escapeHtml(c)}</span>`)
+                    .join('');
+                if (chips) {
+                    parts.push(`<div class="citations" aria-label="Citations">${chips}</div>`);
+                }
+            }
+
+            resultMetaDiv.innerHTML = parts.join('');
+        }
+
+        // DOM elements
+        const form = document.getElementById('searchForm');
+        const questionInput = document.getElementById('question');
+        const moduleSelect = document.getElementById('module');
+        const kSelect = document.getElementById('k');
+        const resultsDiv = document.getElementById('results');
+        const answerDiv = document.getElementById('answer');
+        const sourcesDiv = document.getElementById('sources');
+        const resultMetaDiv = document.getElementById('resultMeta');
+        const reasoningBlock = document.getElementById('reasoningBlock');
+        const reasoningBody = document.getElementById('reasoningBody');
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const historyDiv = document.getElementById('history');
+        const historyList = document.getElementById('historyList');
+        const clearBtn = document.getElementById('clearBtn');
+        const statusDiv = document.getElementById('status');
+
+        // Load modules
+        async function loadModules() {
+            try {
+                const response = await fetch(API_BASE + '/info');
+                const data = await response.json();
+
+                const modules = data.modules || {};
+                const modulesByComponent = data.modules_by_component || {};
+
+                moduleSelect.innerHTML = '<option value="">All modules</option>';
+
+                // Sort components alphabetically
+                const sortedComponents = Object.keys(modulesByComponent).sort();
+
+                for (const component of sortedComponents) {
+                    const componentModules = modulesByComponent[component];
+
+                    // Sort modules within component
+                    const sortedModules = Object.keys(componentModules).sort();
+
+                    for (const module of sortedModules) {
+                        const chunkCount = componentModules[module];
+                        const displayName = `${component} > ${module}`;
+                        const option = document.createElement('option');
+                        option.value = module;
+                        option.textContent = `${displayName} (${chunkCount} chunks)`;
+                        moduleSelect.appendChild(option);
+                    }
+                }
+
+                // Also add any modules not in a component (fallback)
+                const allModuleNames = new Set(Object.keys(modules));
+                const groupedModuleNames = new Set();
+                for (const component of sortedComponents) {
+                    for (const module of Object.keys(modulesByComponent[component])) {
+                        groupedModuleNames.add(module);
+                    }
+                }
+
+                const ungroupedModules = [...allModuleNames].filter(m => !groupedModuleNames.has(m)).sort();
+                for (const module of ungroupedModules) {
+                    const option = document.createElement('option');
+                    option.value = module;
+                    option.textContent = `${module} (${modules[module] || 0} chunks)`;
+                    moduleSelect.appendChild(option);
+                }
+
+                updateStatus(data.total_chunks);
+
+            } catch (err) {
+                console.error('Failed to load modules:', err);
+            }
+        }
+
+        function updateStatus(totalChunks) {
+            if (totalChunks > 0) {
+                statusDiv.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <span>${totalChunks} chunks indexed</span>
+                `;
+            }
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const question = questionInput.value.trim();
+            if (!question) return;
+
+            // Show loading
+            loadingDiv.classList.add('active');
+            errorDiv.style.display = 'none';
+            resultsDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(API_BASE + '/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                        module: moduleSelect.value || null,
+                        k: parseInt(kSelect.value),
+                        show_sources: true,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+
+                const data = await response.json();
+
+                // The API may return the model response as either a structured
+                // object or as a string containing a JSON object. Normalize it
+                // before rendering so a JSON-looking answer is not displayed as
+                // a raw object to the user.
+                let result = data;
+                if (typeof result.answer === 'string') {
+                    const answerText = result.answer.trim();
+                    if (answerText.startsWith('{')) {
+                        try {
+                            const parsed = JSON.parse(answerText);
+                            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                                result = { ...result, ...parsed };
+                            }
+                        } catch (_) {
+                            // Treat a non-JSON string as ordinary markdown.
+                        }
+                    }
+                }
+
+                // Render the answer as sanitized markdown.
+                if (result.answer) {
+                    answerDiv.innerHTML = renderMarkdown(result.answer);
+                } else {
+                    answerDiv.textContent = 'No answer found.';
+                }
+
+                // Confidence badge + citation chips (LLM-attributed).
+                renderResultMeta(result);
+
+                // Reasoning is collapsible; only present when the model returned it.
+                if (result.reasoning && String(result.reasoning).trim()) {
+                    reasoningBody.textContent = String(result.reasoning);
+                    reasoningBlock.hidden = false;
+                    reasoningBlock.removeAttribute('open');
+                } else {
+                    reasoningBlock.hidden = true;
+                    reasoningBody.textContent = '';
+                }
+
+                if (data.sources && data.sources.length > 0) {
+                    sourcesDiv.innerHTML = `
+                        <h3>Sources (${escapeHtml(data.retrieved_count)} retrieved)</h3>
+                        ${data.source_details.map(src => {
+                            const label = src.section_title
+                                ? `${src.component} > ${src.module} > ${src.section_title}`
+                                : `${src.component} > ${src.module}`;
+                            const linkHtml = src.url
+                                ? `<a href="${escapeHtml(src.url)}" class="source-link" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
+                                : `<a href="#" class="source-link" data-link="${escapeHtml(src.link)}">${escapeHtml(src.link)}</a>`;
+                            return `
+                                <div class="source-item">
+                                    <div class="source-header">
+                                        ${linkHtml}
+                                    </div>
+                                    <div class="source-text">${escapeHtml(src.text_preview)}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    `;
+                } else {
+                    sourcesDiv.innerHTML = '<h3>No sources found</h3>';
+                }
+
+                resultsDiv.style.display = 'block';
+
+                // Add to history
+                addToHistory(question);
+
+            } catch (err) {
+                errorDiv.textContent = 'Error: ' + err.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.classList.remove('active');
+            }
+        });
+
+        // Submit on Enter; Shift+Enter still inserts a newline. ``isComposing``
+        // guards against IME composition (CJK, dead-key sequences).
+        questionInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+        });
+
+        // Clear form
+        clearBtn.addEventListener('click', () => {
+            form.reset();
+            resultsDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+        });
+
+        // History functions
+        function addToHistory(question) {
+            history.unshift({
+                question: question,
+                timestamp: Date.now()
+            });
+
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+
+            localStorage.setItem('qaHistory', JSON.stringify(history));
+            renderHistory();
+            historyDiv.style.display = 'block';
+        }
+
+        function renderHistory() {
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item" data-question="${escapeHtml(item.question)}">
+                    <span class="history-question">${escapeHtml(item.question)}</span>
+                </div>
+            `).join('');
+        }
+
+        // Delegated click handler: history items load the question back into
+        // the input and re-submit.
+        historyList.addEventListener('click', (e) => {
+            const item = e.target.closest('.history-item');
+            if (!item) return;
+            questionInput.value = item.dataset.question || '';
+            form.requestSubmit();
+        });
+
+        // Delegated click handler: source links with no real URL fall back to
+        // copying the page identifier to the clipboard. Links pointing at the
+        // published Antora site (with ``href``) are left alone so the browser
+        // can open them normally.
+        sourcesDiv.addEventListener('click', (e) => {
+            const link = e.target.closest('.source-link');
+            if (!link || !link.dataset.link) return;
+            e.preventDefault();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link.dataset.link);
+            }
+        });
+
+        // Initialize
+        loadModules();
+        renderHistory();
+
+        // Load last question if exists
+        if (history.length > 0) {
+            questionInput.placeholder = history[0].question;
+        }
+    </script>
+</body>
+</html>
