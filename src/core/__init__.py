@@ -1,1 +1,1 @@
-# Core module for Home Q&A
+# Core module for DocOracle

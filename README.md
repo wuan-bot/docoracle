@@ -1,4 +1,4 @@
-# Home Q&A
+# DocOracle
 
 Answer questions about your Antora/AsciiDoc documentation using LLM APIs.
 
@@ -82,10 +82,10 @@ antora-docs/
 ```bash
 # Using CLI
 python -m src.cli ingest
-qa ingest
+docoracle ingest
 
 # With options
-qa ingest --antora-root ./docs --chunk-size 256 --overlap 25
+docoracle ingest --antora-root ./docs --chunk-size 256 --overlap 25
 ```
 
 This will:
@@ -101,8 +101,8 @@ This will:
 
 ```bash
 # Using CLI
-qa serve
-qa serve --host 0.0.0.0 --port 8080
+docoracle serve
+docoracle serve --host 0.0.0.0 --port 8080
 
 # Or directly
 python -m src.cli serve
@@ -112,16 +112,16 @@ python -m src.cli serve
 
 ```bash
 # Simple question
-qa ask "How do I configure the database?"
+docoracle ask "How do I configure the database?"
 
 # Filter by module
-qa ask "What are the API endpoints?" --module module-api
+docoracle ask "What are the API endpoints?" --module module-api
 
 # Show sources
-qa ask "How to install?" --show-sources
+docoracle ask "How to install?" --show-sources
 
 # Show full context
-qa ask "What's new in v2?" --show-context
+docoracle ask "What's new in v2?" --show-context
 ```
 
 ## Using the Web Server
@@ -130,7 +130,7 @@ qa ask "What's new in v2?" --show-context
 
 ```bash
 # Using the installed script
-qa-server
+docoracle-server
 
 # Or directly with uvicorn
 python -m src.server
@@ -180,7 +180,7 @@ The web UI provides:
 ### `ingest`
 
 ```bash
-qa ingest [OPTIONS]
+docoracle ingest [OPTIONS]
 
 Options:
   --antora-root TEXT    Path to Antora project root
@@ -192,7 +192,7 @@ Options:
 ### `ask`
 
 ```bash
-qa ask QUESTION [OPTIONS]
+docoracle ask QUESTION [OPTIONS]
 
 Arguments:
   QUESTION  The question to answer
@@ -210,7 +210,7 @@ Options:
 ### `search`
 
 ```bash
-qa search TEXT [OPTIONS]
+docoracle search TEXT [OPTIONS]
 
 Arguments:
   TEXT  Text to search for similar chunks
@@ -224,7 +224,7 @@ Options:
 ### `info`
 
 ```bash
-qa info
+docoracle info
 ```
 
 Shows information about the vector store (total chunks, count by module).
@@ -232,7 +232,7 @@ Shows information about the vector store (total chunks, count by module).
 ### `components`
 
 ```bash
-qa components [OPTIONS]
+docoracle components [OPTIONS]
 
 Options:
   --antora-root TEXT      Path to Antora root (default: ./antora-docs)
@@ -247,19 +247,19 @@ Options:
 
 ```bash
 # List all components from playbook
-qa components --antora-root antora-docs --list-sources
+docoracle components --antora-root antora-docs --list-sources
 
 # Clone all missing repos using SSH (default)
-qa components --antora-root antora-docs --clone
+docoracle components --antora-root antora-docs --clone
 
 # Clone using HTTPS URLs
-qa components --antora-root antora-docs --clone --https
+docoracle components --antora-root antora-docs --clone --https
 
 # Dry run to see what would be cloned
-qa components --antora-root antora-docs --clone --dry-run
+docoracle components --antora-root antora-docs --clone --dry-run
 
 # Clone to a specific directory
-qa components --antora-root antora-docs --clone --target-dir ./all-docs
+docoracle components --antora-root antora-docs --clone --target-dir ./all-docs
 ```
 
 **Note:** HTTPS URLs are automatically converted to SSH format (e.g.,
@@ -269,7 +269,7 @@ Use `--https` to keep the original HTTPS URLs.
 ## Project Structure
 
 ```
-qa/
+docoracle/
 ├── src/
 │   ├── core/
 │   │   ├── __init__.py
@@ -369,11 +369,11 @@ prompts:
 ## Answer Backends
 
 Two interchangeable answer backends live under `src/backends/`. Select one with
-`qa.backend` in `config.yaml`; both honor the same retrieval inputs and return
+`docoracle.backend` in `config.yaml`; both honor the same retrieval inputs and return
 the same detailed result shape, so the CLI and HTTP API are backend-agnostic.
 
 ```yaml
-qa:
+docoracle:
   backend: engine   # engine (default) | agent
 ```
 
@@ -426,7 +426,7 @@ concepts, and the [browser session workflow](docs/concepts.md) — see
   └── bm25.pkl       # tokenized corpus + BM25 params
 ```
 
-> **Breaking change**: prior versions stored only `metadata.pkl` + `index.faiss`. After upgrading, run `qa ingest --force` to populate the new layout.
+> **Breaking change**: prior versions stored only `metadata.pkl` + `index.faiss`. After upgrading, run `docoracle ingest --force` to populate the new layout.
 
 ## Document Linking
 

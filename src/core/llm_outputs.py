@@ -1,4 +1,4 @@
-"""Structured LLM outputs for Home Q&A.
+"""Structured LLM outputs for DocOracle.
 
 Provides Pydantic models for validating and parsing LLM responses,
 enabling type-safe interactions with the LLM API.

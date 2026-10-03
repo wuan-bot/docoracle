@@ -1,4 +1,4 @@
-"""CLI interface for Home Q&A."""
+"""CLI interface for DocOracle."""
 
 from pathlib import Path
 from typing import Any
@@ -55,7 +55,7 @@ def _get_pydantic_config(config_path: str) -> Config:
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 def cli(ctx: click.Context, config: str, debug: bool) -> None:
-    """Home Q&A CLI tool."""
+    """DocOracle CLI tool."""
     ctx.ensure_object(dict)  # type: ignore[arg-type]
     ctx.obj["config"] = config  # type: ignore[arg-type]
     ctx.obj["debug"] = debug  # type: ignore[arg-type]
@@ -572,10 +572,10 @@ def serve(
 
     ctx.obj["config"]  # type: ignore[arg-type]
     # Local --debug on `serve` takes precedence over the group-level --debug,
-    # so `qa serve --debug` works the same as `qa --debug serve`.
+    # so `docoracle serve --debug` works the same as `docoracle --debug serve`.
     debug_mode = debug or ctx.obj.get("debug", False)  # type: ignore[arg-type]
 
-    click.echo("Starting Home Q&A server...")
+    click.echo("Starting DocOracle server...")
     click.echo(f"  Host: {host}")
     click.echo(f"  Port: {port}")
     click.echo(f"  Open: http://{host}:{port}/ui")

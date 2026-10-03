@@ -89,7 +89,7 @@ The `HybridSearcher` MUST apply metadata filters (module, component, version, an
 The system MUST allow callers to select between `hybrid`, `semantic`, and `bm25` retrieval modes via a `--retrieval` CLI flag and a `retrieval` field on the `AskRequest` and `SearchRequest` API models. Invalid values MUST be rejected with a clear error.
 
 #### Scenario: CLI flag selects explicit mode
-- **WHEN** `qa ask "question" --retrieval bm25` is invoked
+- **WHEN** `docoracle ask "question" --retrieval bm25` is invoked
 - **THEN** only the BM25 path is queried and results are not fused
 
 #### Scenario: API field selects explicit mode

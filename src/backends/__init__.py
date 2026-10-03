@@ -1,4 +1,4 @@
-"""Answer backends for Home Q&A.
+"""Answer backends for DocOracle.
 
 Houses the two interchangeable answer paths behind the shared
 :class:`~src.backends.protocol.AnswerBackend` interface:

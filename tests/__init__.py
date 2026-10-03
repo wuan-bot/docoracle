@@ -1,1 +1,1 @@
-# Tests for Home Q&A project
+# Tests for DocOracle project

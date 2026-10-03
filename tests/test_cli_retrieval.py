@@ -1,4 +1,4 @@
-"""Tests for CLI invocation of `qa ask` with the --retrieval flag."""
+"""Tests for CLI invocation of `docoracle ask` with the --retrieval flag."""
 
 from click.testing import CliRunner
 

@@ -27,7 +27,7 @@ already a hard dependency and both paths build their model through
 
 - A single home for answer generation (`src/backends/`) with a shared
   `AnswerBackend` protocol so CLI and server are backend-agnostic.
-- A config-driven backend choice (`qa.backend`, default `engine`) with no
+- A config-driven backend choice (`docoracle.backend`, default `engine`) with no
   behavior change when unset.
 - Provider-native structured output for the engine, removing the heuristic
   parser entirely.
@@ -81,7 +81,7 @@ deleted. `StructuredLLMClient` keeps embeddings, chat, and streaming; its
 
 Consequence: when a model returns nothing schema-conformant, pydantic-ai raises
 instead of silently degrading. This is intended — the previous fallback masked
-failures. The `engine` default and `qa.backend` switch keep rollback cheap.
+failures. The `engine` default and `docoracle.backend` switch keep rollback cheap.
 
 *Alternatives considered:*
 - **Keep the prompt-embedded JSON schema + parser** — rejected; the heuristics
@@ -91,7 +91,7 @@ failures. The `engine` default and `qa.backend` switch keep rollback cheap.
 
 ### Config-driven backend resolved by a shared factory
 
-Add `qa.backend` (`engine` | `agent`, default `engine`) to `Config` as a
+Add `docoracle.backend` (`engine` | `agent`, default `engine`) to `Config` as a
 `Literal` so an unknown value fails at load with an error naming the valid
 options. `create_answer_backend(config)` constructs the selected backend and
 returns it typed as `AnswerBackend`. Assigning `default_mode` on the protocol
@@ -122,7 +122,7 @@ backends.
   engine remains the default and the tool prompt/instructions drive when that
   happens.
 - **Native structured output can raise on non-conforming models** → Mitigation:
-  it fails loudly instead of fabricating an answer; `qa.backend` allows instant
+  it fails loudly instead of fabricating an answer; `docoracle.backend` allows instant
   rollback and the engine/agent parity tests run against stubs.
 - **Moving modules breaks imports/tests** → Mitigation: mechanical move plus a
   grep-verified import update in the task list; `basedpyright`/`ruff`/`pytest`
@@ -135,7 +135,7 @@ backends.
 ## Migration Plan
 
 1. Create `src/backends/` and move `QAEngine`/`QAAgent` there; update imports.
-2. Add `qa.backend` (default `engine`); route CLI/server through the factory.
+2. Add `docoracle.backend` (default `engine`); route CLI/server through the factory.
 3. Switch the engine to native structured output and delete the parser.
 4. Enable `agent` in config where desired; roll back by setting `engine`.
 

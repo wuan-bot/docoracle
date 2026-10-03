@@ -8,7 +8,7 @@
 
 ## 2. Configuration and factory
 
-- [x] 2.1 Add a `qa.backend` setting (`Literal["engine", "agent"]`, default `engine`) to `src/core/config.py` and verify the default with a config-parsing test
+- [x] 2.1 Add a `docoracle.backend` setting (`Literal["engine", "agent"]`, default `engine`) to `src/core/config.py` and verify the default with a config-parsing test
 - [x] 2.2 Verify an unsupported backend value is rejected at config load with an error naming `engine` and `agent` (test)
 - [x] 2.3 Implement `create_answer_backend(config)` in `src/backends/factory.py`, constructing the searcher, LLM client, and selected backend, and verify it returns the engine by default and the agent when configured (test)
 - [x] 2.4 Verify the factory logs or reports which backend is active on construction
@@ -54,5 +54,5 @@
 - [x] 8.1 Add shared parity tests that run the same question/filter/mode fixtures against engine and agent and assert equivalent result shapes, and verify they pass
 - [x] 8.2 Verify the default (`engine`) backend produces the same CLI/API output shape before and after the change
 - [x] 8.3 Run the full suite (`pytest`), `ruff check`, `ruff format --check`, and `basedpyright src/` and verify all pass
-- [x] 8.4 Update `README.md` and `config.yaml` to document `qa.backend`, the `src/backends/` layout, and native structured output
+- [x] 8.4 Update `README.md` and `config.yaml` to document `docoracle.backend`, the `src/backends/` layout, and native structured output
 - [x] 8.5 Update `docs/concepts.md` to describe the two backends as first-class and reachable

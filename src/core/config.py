@@ -1,4 +1,4 @@
-"""Configuration management for Home Q&A.
+"""Configuration management for DocOracle.
 
 Uses Pydantic for type-safe configuration loading and validation.
 Supports loading from YAML files, environment variables, and provides defaults.
@@ -123,7 +123,7 @@ class PromptsConfig(BaseModel):
     )
 
 
-class QAConfig(BaseModel):
+class DocOracleConfig(BaseModel):
     """Answer-backend selection."""
 
     backend: Literal["engine", "agent"] = Field(
@@ -202,7 +202,7 @@ def _resolve_env_vars_recursive(data: Any) -> Any:
 
 
 class Config(BaseModel):
-    """Main configuration for Home Q&A.
+    """Main configuration for DocOracle.
 
     This is the root configuration model that contains all nested configurations.
     It can be loaded from a YAML file or created with defaults.
@@ -218,7 +218,7 @@ class Config(BaseModel):
     retrieval: RetrievalConfig = Field(default_factory=lambda: RetrievalConfig())  # type: ignore[arg-type]
     generation: GenerationConfig = Field(default_factory=lambda: GenerationConfig())  # type: ignore[arg-type]
     prompts: PromptsConfig = Field(default_factory=lambda: PromptsConfig())  # type: ignore[arg-type]
-    qa: QAConfig = Field(default_factory=lambda: QAConfig())  # type: ignore[arg-type]
+    docoracle: DocOracleConfig = Field(default_factory=lambda: DocOracleConfig())  # type: ignore[arg-type]
 
     @classmethod
     def from_yaml(cls, config_path: str = "config.yaml") -> "Config":

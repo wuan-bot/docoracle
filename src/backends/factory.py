@@ -21,12 +21,12 @@ def create_answer_backend(
     llm_client: StructuredLLMClient,
     config: Config,
 ) -> AnswerBackend:
-    """Return the answer backend selected by ``config.qa.backend``.
+    """Return the answer backend selected by ``config.docoracle.backend``.
 
     The agent module is imported lazily so the engine backend does not depend on
     the agent (and vice versa).
     """
-    if config.qa.backend == "agent":
+    if config.docoracle.backend == "agent":
         from .agent import QAAgent
 
         logger.info("Answer backend: agent")

@@ -1,4 +1,4 @@
-"""FastAPI backend server for Home Q&A."""
+"""FastAPI backend server for DocOracle."""
 
 import logging
 from pathlib import Path
@@ -149,7 +149,7 @@ class IngestResponse(BaseModel):
 
 # Create FastAPI app
 app = FastAPI(
-    title="Home Q&A API",
+    title="DocOracle API",
     description="Answer questions about documentation",
     version="0.2.0",
 )
@@ -384,7 +384,7 @@ async def serve_ui():
             headers=headers,
         )
     return HTMLResponse(
-        content="<h1>Home Q&A API</h1><p>UI not found.</p>",
+        content="<h1>DocOracle API</h1><p>UI not found.</p>",
         status_code=404,
         headers=headers,
     )
